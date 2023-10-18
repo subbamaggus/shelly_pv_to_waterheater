@@ -1,24 +1,12 @@
- // IP from the remote shelly plug / plug-s we'd like to monitor
-let remoteip = '192.168.178.64';
 
+let powerPerLine = 1500;
+let powerAverage = 0;
+let averageValues = 5;
 
-// the number of consecutive times the check will run until the appliance is considered as finished power consumption has to be below "minUsage" 
-let timesInactive = 5; // in minutes
-
-// minimum watts usage .. above this value the appliance is considered as "started".. 
-// below this value and timesInactive is reached the appliance is considered as finished. 
-let minUsage = 10; // Watts
-// CONFIG END 
-
-let average = 1049;
-let average_count = 5;
-
+let myState = 0;
 
 // Do not change code below this line!
-let countInactive = 0;
 let alertTimer = null;
-let active = false;
-let stopped = false;
 
 
 function startMonitor() {
@@ -26,7 +14,7 @@ function startMonitor() {
         true,
         function () {
             Shelly.call("HTTP.GET", {
-                    url: 'http://' + remoteip + '/strom/'
+                    url: 'http://192.168.178.64/strom/'
                 },
                 function (res, error_code, error_msg, ud) {
                     if (error_code !== 0)
@@ -36,10 +24,54 @@ function startMonitor() {
                     else if (res.code === 200) {
                         let st = JSON.parse(res.body);
                         let current = st.psaldo;
-                        print("data" + JSON.stringify(current));
                         
-                        average = (average * average_count + current) / (average_count + 1);
-                        print("average" + JSON.stringify(average));
+                        powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
+                        
+                        if("VersionA") {
+                            maxThreshold = powerPerLine;
+                            minThreshold = 0;
+                        }
+                        else { // Version B
+                            maxThreshold = 0;
+                            minThreshold = -1 * powerPerLine;
+                        }
+                        
+                        if(powerAverage > maxThreshold) {
+                            myState = myState + 1;
+                        }
+                        if(powerAverage < minThreshold) {
+                            myState = myState - 1;
+                        }
+                    
+                        if(myState < 0)
+                            myState = 0;
+                        if(myState > 3)
+                            myState = 3;
+                        
+                        // modulo 3 for day switching of switches
+                        // make it more generic
+                        if(myState === 0) {
+                            Shelly.call("Switch.Set", {"id": 0, "on": false});
+                            Shelly.call("Switch.Set", {"id": 1, "on": false});
+                            Shelly.call("Switch.Set", {"id": 2, "on": false});
+                        }
+                        if(myState === 1) {
+                            Shelly.call("Switch.Set", {"id": 0, "on": true});
+                            Shelly.call("Switch.Set", {"id": 1, "on": false});
+                            Shelly.call("Switch.Set", {"id": 2, "on": false});
+                        }
+                        if(myState === 2) {
+                            Shelly.call("Switch.Set", {"id": 0, "on": true});
+                            Shelly.call("Switch.Set", {"id": 1, "on": true});
+                            Shelly.call("Switch.Set", {"id": 2, "on": false});
+                        }
+                        if(myState === 3) {
+                            Shelly.call("Switch.Set", {"id": 0, "on": true});
+                            Shelly.call("Switch.Set", {"id": 1, "on": true});
+                            Shelly.call("Switch.Set", {"id": 2, "on": true});
+                        }
+
+                        
                     };
                 },
                 null
