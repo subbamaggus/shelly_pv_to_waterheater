@@ -10,6 +10,9 @@ let timesInactive = 5; // in minutes
 let minUsage = 10; // Watts
 // CONFIG END 
 
+let average = 1049;
+let average_count = 5;
+
 
 // Do not change code below this line!
 let countInactive = 0;
@@ -34,7 +37,9 @@ function startMonitor() {
                         let st = JSON.parse(res.body);
                         let current = st.psaldo;
                         print("data" + JSON.stringify(current));
-                   
+                        
+                        average = (average * average_count + current) / (average_count + 1);
+                        print("average" + JSON.stringify(average));
                     };
                 },
                 null
@@ -45,6 +50,4 @@ function startMonitor() {
 }
 
 
-print("mystart");
 startMonitor();
-print("myend");
