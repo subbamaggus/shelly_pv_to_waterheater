@@ -7,6 +7,7 @@ let maxThreshold = 0;
 let minThreshold = 0;
 
 let myState = 0;
+let myunixdayint = 0;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -92,5 +93,18 @@ function getData() {
         null
     );
 };
+
+function getDate() {
+    Shelly.call("Sys.GetStatus",
+        {},
+        function(result, err_code, err_message, user_data) {
+            if (err_code === 0) {
+                // processing successful result
+                myunixdayint = result.unixtime / 86400 | 0;
+            }
+        },
+        null
+    );
+}
 
 startMonitor();
