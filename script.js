@@ -48,27 +48,31 @@ function startMonitor() {
             print("minThreshold" + JSON.stringify(minThreshold));
             print("maxThreshold" + JSON.stringify(maxThreshold));
             
-            // modulo 3 for day switching of switches
+            // modulo 3 for day cycling of switches
+            let switch1 = myunixdayint % 3;
+            let switch2 = (myunixdayint + 1) % 3;
+            let switch3 = (myunixdayint + 2) % 3;
+            
             // make it more generic
             if(myState === 0) {
-                Shelly.call("Switch.Set", {"id": 0, "on": false});
-                Shelly.call("Switch.Set", {"id": 1, "on": false});
-                Shelly.call("Switch.Set", {"id": 2, "on": false});
+                Shelly.call("Switch.Set", {"id": switch1, "on": false});
+                Shelly.call("Switch.Set", {"id": switch2, "on": false});
+                Shelly.call("Switch.Set", {"id": switch3, "on": false});
             }
             if(myState === 1) {
-                Shelly.call("Switch.Set", {"id": 0, "on": true});
-                Shelly.call("Switch.Set", {"id": 1, "on": false});
-                Shelly.call("Switch.Set", {"id": 2, "on": false});
+                Shelly.call("Switch.Set", {"id": switch1, "on": true});
+                Shelly.call("Switch.Set", {"id": switch2, "on": false});
+                Shelly.call("Switch.Set", {"id": switch3, "on": false});
             }
             if(myState === 2) {
-                Shelly.call("Switch.Set", {"id": 0, "on": true});
-                Shelly.call("Switch.Set", {"id": 1, "on": true});
-                Shelly.call("Switch.Set", {"id": 2, "on": false});
+                Shelly.call("Switch.Set", {"id": switch1, "on": true});
+                Shelly.call("Switch.Set", {"id": switch2, "on": true});
+                Shelly.call("Switch.Set", {"id": switch3, "on": false});
             }
             if(myState === 3) {
-                Shelly.call("Switch.Set", {"id": 0, "on": true});
-                Shelly.call("Switch.Set", {"id": 1, "on": true});
-                Shelly.call("Switch.Set", {"id": 2, "on": true});
+                Shelly.call("Switch.Set", {"id": switch1, "on": true});
+                Shelly.call("Switch.Set", {"id": switch2, "on": true});
+                Shelly.call("Switch.Set", {"id": switch3, "on": true});
             }
         },
         null
