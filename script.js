@@ -8,6 +8,7 @@ let minThreshold = 0;
 
 let myState = 0;
 let myunixdayint = 0;
+let myInput = false;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -23,7 +24,7 @@ function startMonitor() {
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
             
             // get this info from in input switch
-            if("VersionA") {
+            if(myInput) {
                 maxThreshold = powerPerLine;
                 minThreshold = 0;
             }
@@ -44,12 +45,11 @@ function startMonitor() {
             if(myState > 3)
                 myState = 3;
             
-            print("myState " + JSON.stringify(myState));
-            print("current" + JSON.stringify(current));
-            print("powerAverage " + JSON.stringify(powerAverage));
-            print("minThreshold" + JSON.stringify(minThreshold));
-            print("maxThreshold" + JSON.stringify(maxThreshold));
-            print("myunixdayint" + JSON.stringify(myunixdayint));
+            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
+            print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
+            print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
+            print("myInput " + JSON.stringify(myInput));
+            print("-----");
             
             // modulo 3 for day cycling of switches
             let switch1 = myunixdayint % 3;
@@ -94,7 +94,6 @@ function getData() {
             else if (res.code === 200) {
                 let st = JSON.parse(res.body);
                 current = st.psaldo;
-                print("current " + JSON.stringify(current)); 
             };
         },
         null
@@ -113,5 +112,18 @@ function getDate() {
         null
     );
 }
+
+function getInput() {
+    Shelly.call(
+        "switch.getStatus",
+        { id: 0 },
+        function (response) {
+            myInput = response.output;
+        },
+        null
+    );    
+}
+
+getInput();
 
 startMonitor();
