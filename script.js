@@ -1,4 +1,4 @@
-let powerPerLine = 1500;
+let powerPerLine = 2000;
 let powerAverage = 1040;
 let averageValues = 3;
 let current = 0;
@@ -18,9 +18,11 @@ function startMonitor() {
         true,
         function () {
             getData();
+            getDate();
             
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
             
+            // get this info from in input switch
             if("VersionA") {
                 maxThreshold = powerPerLine;
                 minThreshold = 0;
@@ -47,6 +49,7 @@ function startMonitor() {
             print("powerAverage " + JSON.stringify(powerAverage));
             print("minThreshold" + JSON.stringify(minThreshold));
             print("maxThreshold" + JSON.stringify(maxThreshold));
+            print("myunixdayint" + JSON.stringify(myunixdayint));
             
             // modulo 3 for day cycling of switches
             let switch1 = myunixdayint % 3;
