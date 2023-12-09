@@ -84,7 +84,7 @@ function startMonitor() {
 
 function getData() {
     Shelly.call("HTTP.GET", {
-            url: 'http://192.168.178.69/strom/'
+            url: 'http://192.168.178.119/cm?cmnd=status%2010'
         },
         function (res, error_code, error_msg, ud) {
             if (error_code !== 0) {
@@ -93,7 +93,7 @@ function getData() {
             }
             else if (res.code === 200) {
                 let st = JSON.parse(res.body);
-                current = st.psaldo;
+                current = st.StatusSNS.SML.z16_7_0;
             };
         },
         null
