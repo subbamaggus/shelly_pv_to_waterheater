@@ -9,6 +9,8 @@ let minThreshold = 0;
 let myState = 0;
 let myunixdayint = 0;
 let mySW0 = false;
+let mySW1 = false;
+let mySW2 = false;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -24,7 +26,7 @@ function startMonitor() {
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
             
             // get this info from in input switch
-            if(mySW0) {
+            if(mySW0) { // Version A
                 maxThreshold = powerPerLine;
                 minThreshold = 0;
             }
@@ -40,6 +42,16 @@ function startMonitor() {
                 myState = myState - 1;
             }
             
+            // read input1, if set use heatpump as input            
+            if(mySW1) {
+                // Version C
+                myState = 0;
+                if(mySW2) {
+                    myState = 3;
+                }
+            }
+            
+            // make sure that only allowed states are used
             if(myState < 0)
                 myState = 0;
             if(myState > 3)
@@ -119,6 +131,22 @@ function getInput() {
         { id: 0 },
         function (response) {
             mySW0 = response.output;
+        },
+        null
+    );    
+    Shelly.call(
+        "switch.getStatus",
+        { id: 1 },
+        function (response) {
+            mySW1 = response.output;
+        },
+        null
+    );    
+    Shelly.call(
+        "switch.getStatus",
+        { id: 2 },
+        function (response) {
+            mySW2 = response.output;
         },
         null
     );    

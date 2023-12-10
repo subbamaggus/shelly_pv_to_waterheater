@@ -76,14 +76,14 @@ one input is used to allow different aproaches while active
            pv feed       |       withdrawel
        -(powerPerLine)   0      powerPerLine
     ----------|----------|----------|-----------
-    UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD|DDDDDDDDDD             SW1 1 | SW2 0
-    UUUUUUUUUU|UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD             SW1 0 | SW2 0
-    HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH             SW1 X | SW2 1
+    UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD|DDDDDDDDDD             SW0 1 | SW1 0 (Version A)
+    UUUUUUUUUU|UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD             SW0 0 | SW1 0 (Version B)
+    HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH             SW0 X | SW1 1 (Version C)
     
     U Step Up a level
     S Stay on that level
     D Step Down a level
-    H use value from Heatpump
+    H use value from Heatpump (SW2)
     
 in preparation:
 second input is used to overwrite function and use heatpump control as input
