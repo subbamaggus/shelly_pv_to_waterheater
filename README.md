@@ -126,5 +126,7 @@ one input is used to allow different aproaches while active
     D Step Down a level
     H use value from Heatpump (SW2)
     
+    PowerPerLine is the energy consumption of one phase of the water heater, in my case 2000 [W] (see script)
+    
 in preparation:
 second input is used to overwrite function and use heatpump control as input
