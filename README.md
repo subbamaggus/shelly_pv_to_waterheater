@@ -1,4 +1,4 @@
-#shelly pro3 overenergy to waterheater
+# shelly pro3 spare energy to waterheater
 
 ## purpose
 
