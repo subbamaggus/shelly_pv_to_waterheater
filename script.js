@@ -8,7 +8,7 @@ let minThreshold = 0;
 
 let myState = 0;
 let myunixdayint = 0;
-let myInput = false;
+let mySW0 = false;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -24,7 +24,7 @@ function startMonitor() {
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
             
             // get this info from in input switch
-            if(myInput) {
+            if(mySW0) {
                 maxThreshold = powerPerLine;
                 minThreshold = 0;
             }
@@ -48,7 +48,7 @@ function startMonitor() {
             print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
             print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
             print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
-            print("myInput " + JSON.stringify(myInput));
+            print("mySW0 " + JSON.stringify(mySW0));
             print("-----");
             
             // modulo 3 for day cycling of switches
@@ -118,7 +118,7 @@ function getInput() {
         "switch.getStatus",
         { id: 0 },
         function (response) {
-            myInput = response.output;
+            mySW0 = response.output;
         },
         null
     );    
