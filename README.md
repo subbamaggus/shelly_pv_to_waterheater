@@ -2,20 +2,21 @@
 
 ## purpose
 
-a script for a shelly 3pro to control a water heater with spare PV energy
+a script for a shelly 3pro to control a water heater with spare PV energy.
 
-read data from a tasmota meter reader
-use data to control water heater with shelly
+read data from a tasmota meter reader.
+use data to control water heater with shelly.
 
 ## great walkthrough to setup the system
 
 https://hessburg.de/tasmota-wifi-smartmeter-konfigurieren/
+
 https://homeitems.de/smartmeter-mit-tasmota-auslesen/#
 
 
 ## setup tasmota/esp
 
-my concrete reader is "DD3 2R06 DTA SMZ1"
+my reader is "DD3 2R06 DTA SMZ1"
 
 https://tasmota.github.io/docs/Smart-Meter-Interface/#ebz-dd3-obis
 
@@ -30,7 +31,7 @@ here it needed to be adjusted to
 
 javascript cannot decode JSON with an element starting with a number
 
-so 16_7_0 >> z16_7_0 needed to be changed
+so "16_7_0" >> "z16_7_0" needed to be changed
 
 
 ## read data from tasmota
@@ -40,7 +41,8 @@ reading data from hichi/bitshake adapter
 https://wiki.ledhed.net/index.php?title=Tasmota_Command_Line_Options
 
 i use:
-    http://<IP>/cm?cmnd=status%2010
+    
+    http://[IP]/cm?cmnd=status%2010
     "status 10" (in clear)
     
 result in json assumed as (with my setup):
@@ -61,17 +63,15 @@ result in json assumed as (with my setup):
 
 data is read from data.StatusSNS.SML.z16_7_0
 
-averaging aver the last 3 readings.
+averaging the last 3 readings.
 
-if pv overproducton is more than the consumption of one phase of heater it will turn on one phase
+if pv overproducton is more than the consumption of one phase of heater, it will turn on one phase
 if producton is still higher. it will turn on the next phase.
 
 as of the day of year, the first phase will switch, to ensure that every phase is used equally.
 
 one input is used to allow different aproaches while active
 
-in preparation:
-second input is used to overwrite function and use heatpump control as input
 
 
        -(powerPerLine)   0      powerPerLine
@@ -85,3 +85,5 @@ second input is used to overwrite function and use heatpump control as input
     D Step Down a level
     H use value from Heatpump
     
+in preparation:
+second input is used to overwrite function and use heatpump control as input
