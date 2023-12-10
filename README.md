@@ -73,7 +73,7 @@ as of the day of year, the first phase will switch, to ensure that every phase i
 one input is used to allow different aproaches while active
 
 
-
+           pv feed       |       withdrawel
        -(powerPerLine)   0      powerPerLine
     ----------|----------|----------|-----------
     UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD|DDDDDDDDDD             SW1 1 | SW2 0
