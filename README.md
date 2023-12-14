@@ -117,8 +117,8 @@ one input is used to allow different aproaches while active
            pv feed       |       withdrawel
        -(powerPerLine)   0      powerPerLine
     ----------|----------|----------|-----------
-    UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD|DDDDDDDDDD             SW0 1 | SW1 0 (Version A)
-    UUUUUUUUUU|UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD             SW0 0 | SW1 0 (Version B)
+    UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD|DDDDDDDDDD             SW0 0 | SW1 0 (Version A)
+    UUUUUUUUUU|UUUUUUUUUU|SSSSSSSSSS|DDDDDDDDDD             SW0 1 | SW1 0 (Version B)
     HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH|HHHHHHHHHH             SW0 X | SW1 1 (Version C)
     
     U Step Up a level
@@ -128,5 +128,12 @@ one input is used to allow different aproaches while active
     
     PowerPerLine is the energy consumption of one phase of the water heater, in my case 2000 [W] (see script)
     
-in preparation:
+TODO:
+
 second input is used to overwrite function and use heatpump control as input
+
+shut down when wifi down
+
+start with power off
+
+ensure that power is not distributed when reading is not working
