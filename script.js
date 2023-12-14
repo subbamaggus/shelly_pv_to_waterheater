@@ -1,7 +1,8 @@
 let powerPerLine = 2000;
-let powerAverage = 1040;
+
+let powerAverage = powerPerLine + 1234;
+let current = powerPerLine + 1234;
 let averageValues = 3;
-let current = 0;
 
 let maxThreshold = 0;
 let minThreshold = 0;
@@ -26,13 +27,13 @@ function startMonitor() {
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
             
             // get this info from in input switch
-            if(mySW0) { // Version A
+            // Version A
+            maxThreshold = 0;
+            minThreshold = -1 * powerPerLine;
+            if(mySW0) { 
+                // Version B
                 maxThreshold = powerPerLine;
                 minThreshold = 0;
-            }
-            else { // Version B
-                maxThreshold = 0;
-                minThreshold = -1 * powerPerLine;
             }
             
             if(powerAverage > maxThreshold) {
@@ -42,7 +43,7 @@ function startMonitor() {
                 myState = myState - 1;
             }
             
-            // read input1, if set use heatpump as input            
+            // read input, if set use heatpump as input            
             if(mySW1) {
                 // Version C
                 myState = 0;
@@ -57,16 +58,17 @@ function startMonitor() {
             if(myState > 3)
                 myState = 3;
             
-            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
-            print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
-            print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
-            print("mySW0 " + JSON.stringify(mySW0));
-            print("-----");
-            
             // modulo 3 for day cycling of switches
             let switch1 = myunixdayint % 3;
             let switch2 = (myunixdayint + 1) % 3;
             let switch3 = (myunixdayint + 2) % 3;
+
+            print("----- LOG -----");
+            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
+            print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
+            print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
+            print("mySW0 " + JSON.stringify(mySW0) + "mySW1 " + JSON.stringify(mySW1) + "mySW2 " + JSON.stringify(mySW2));
+            print("switch1 " + JSON.stringify(switch1));
             
             // make it more generic
             if(myState === 0) {
@@ -99,6 +101,8 @@ function getData() {
             url: 'http://192.168.178.119/cm?cmnd=status%2010'
         },
         function (res, error_code, error_msg, ud) {
+            // if call is not successful, this should prevent the outputs from beeing turned on
+            current = powerPerLine + 1234;
             if (error_code !== 0) {
                 print("error" + JSON.stringify(error_code));
                 // Not read response if there is an error, to avoid that the script stops

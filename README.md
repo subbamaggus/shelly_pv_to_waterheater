@@ -130,10 +130,7 @@ one input is used to allow different aproaches while active
     
 TODO:
 
-second input is used to overwrite function and use heatpump control as input
-
 shut down when wifi down
+shut down when reading not possible
 
-start with power off
-
-ensure that power is not distributed when reading is not working
+    behavior needs to be tested
