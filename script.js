@@ -2,16 +2,13 @@ let powerPerLine = 2000;
 
 let powerAverage = powerPerLine + 1234;
 let current = powerPerLine + 1234;
-let averageValues = 3;
+let averageValues = 2;
 
 let maxThreshold = 0;
 let minThreshold = 0;
 
 let myState = 0;
 let myunixdayint = 0;
-let mySW0 = false;
-let mySW1 = false;
-let mySW2 = false;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -30,26 +27,12 @@ function startMonitor() {
             // Version A
             maxThreshold = 0;
             minThreshold = -1 * powerPerLine;
-            if(mySW0) { 
-                // Version B
-                maxThreshold = powerPerLine;
-                minThreshold = 0;
-            }
             
             if(powerAverage > maxThreshold) {
-                myState = myState + 1;
-            }
-            if(powerAverage < minThreshold) {
                 myState = myState - 1;
             }
-            
-            // read input, if set use heatpump as input            
-            if(mySW1) {
-                // Version C
-                myState = 0;
-                if(mySW2) {
-                    myState = 3;
-                }
+            if(powerAverage < minThreshold) {
+                myState = myState + 1;
             }
             
             // make sure that only allowed states are used
@@ -67,8 +50,6 @@ function startMonitor() {
             print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
             print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
             print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
-            print("mySW0 " + JSON.stringify(mySW0) + "mySW1 " + JSON.stringify(mySW1) + "mySW2 " + JSON.stringify(mySW2));
-            print("switch1 " + JSON.stringify(switch1));
             
             // make it more generic
             if(myState === 0) {
@@ -129,33 +110,5 @@ function getDate() {
     );
 }
 
-function getInput() {
-    Shelly.call(
-        "switch.getStatus",
-        { id: 0 },
-        function (response) {
-            mySW0 = response.output;
-        },
-        null
-    );    
-    Shelly.call(
-        "switch.getStatus",
-        { id: 1 },
-        function (response) {
-            mySW1 = response.output;
-        },
-        null
-    );    
-    Shelly.call(
-        "switch.getStatus",
-        { id: 2 },
-        function (response) {
-            mySW2 = response.output;
-        },
-        null
-    );    
-}
-
-getInput();
 
 startMonitor();
