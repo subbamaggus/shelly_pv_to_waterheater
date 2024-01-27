@@ -2,13 +2,14 @@ let powerPerLine = 2000;
 
 let powerAverage = powerPerLine + 1234;
 let current = powerPerLine + 1234;
-let averageValues = 2;
+let averageValues = 1;
 
 let maxThreshold = 0;
 let minThreshold = 0;
 
 let myState = 0;
 let myunixdayint = 0;
+let mycount = 0;
 
 // Do not change code below this line!
 let alertTimer = null;
@@ -22,7 +23,16 @@ function startMonitor() {
             getDate();
             
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
-            
+
+            print("----- LOG -----");
+            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
+
+            mycount = mycount + 1;
+            if(mycount < 3) {
+                return;
+            }
+            mycount = 0;
+                        
             // get this info from in input switch
             // Version A
             maxThreshold = 0;
@@ -46,8 +56,6 @@ function startMonitor() {
             let switch2 = (myunixdayint + 1) % 3;
             let switch3 = (myunixdayint + 2) % 3;
 
-            print("----- LOG -----");
-            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
             print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
             print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
             
