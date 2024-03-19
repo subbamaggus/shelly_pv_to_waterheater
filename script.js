@@ -25,7 +25,7 @@ function startMonitor() {
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
 
             print("----- LOG -----");
-            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
+            print("powerCurrent " + current + ", powerAverage " + powerAverage);
 
             mycount = mycount + 1;
             if(mycount < 3) {
@@ -33,8 +33,6 @@ function startMonitor() {
             }
             mycount = 0;
                         
-            // get this info from in input switch
-            // Version A
             maxThreshold = 0;
             minThreshold = -1 * powerPerLine;
             
@@ -56,8 +54,8 @@ function startMonitor() {
             let switch2 = (myunixdayint + 1) % 3;
             let switch3 = (myunixdayint + 2) % 3;
 
-            print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
-            print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
+            print("minThreshold " + minThreshold + ", maxThreshold " + maxThreshold);
+            print("myState " + myState + ", myunixdayint " + myunixdayint);
             
             // make it more generic
             if(myState === 0) {
@@ -90,15 +88,15 @@ function getData() {
             url: 'http://192.168.178.119/cm?cmnd=status%2010'
         },
         function (res, error_code, error_msg, ud) {
-            // if call is not successful, this should prevent the outputs from beeing turned on
             current = powerPerLine + 1234;
             if (error_code !== 0) {
-                print("error" + JSON.stringify(error_code));
-                // Not read response if there is an error, to avoid that the script stops
+                print("error" + error_code);
             }
             else if (res.code === 200) {
                 let st = JSON.parse(res.body);
-                current = st.StatusSNS.SML.z16_7_0;
+                if(undefined !== st.StatusSNS.SML.z16_7_0) {
+                    current = st.StatusSNS.SML.z16_7_0;
+                }
             };
         },
         null
@@ -111,7 +109,7 @@ function getDate() {
         function(result, err_code, err_message, user_data) {
             if (err_code === 0) {
                 // processing successful result
-                myunixdayint = result.unixtime / 86400 | 0;
+                myunixdayint = Math.floor(result.unixtime / 86400);
             }
         },
         null
