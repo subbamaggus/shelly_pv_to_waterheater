@@ -1,43 +1,40 @@
 let powerPerLine = 2000;
 
+// Do not change code below this line!
+
 let powerAverage = powerPerLine + 1234;
 let current = powerPerLine + 1234;
 let averageValues = 1;
-
-let maxThreshold = 0;
-let minThreshold = 0;
 
 let myState = 0;
 let myunixdayint = 0;
 let mycount = 0;
 
-// Do not change code below this line!
-let alertTimer = null;
+// will be different later:
+let maxThreshold = 0;
+let minThreshold = -1 * powerPerLine;
 
+let dataPollTimer = null;
+let unixdayPollTimer = null;
 
 function startMonitor() {
-    alertTimer = Timer.set(10 * 1000,
+    dataPollTimer = Timer.set(10 * 1000,
         true,
         function () {
             getData();
-            getDate();
             
             powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
 
             print("----- LOG -----");
-            print("powerCurrent " + JSON.stringify(current) + ", powerAverage " + JSON.stringify(powerAverage));
-
+            print("powerCurrent " + current + ", powerAverage " + powerAverage);
+            
+            // only use every third calls result
             mycount = mycount + 1;
             if(mycount < 3) {
                 return;
             }
             mycount = 0;
                         
-            // get this info from in input switch
-            // Version A
-            maxThreshold = 0;
-            minThreshold = -1 * powerPerLine;
-            
             if(powerAverage > maxThreshold) {
                 myState = myState - 1;
             }
@@ -56,30 +53,23 @@ function startMonitor() {
             let switch2 = (myunixdayint + 1) % 3;
             let switch3 = (myunixdayint + 2) % 3;
 
-            print("minThreshold " + JSON.stringify(minThreshold) + ", maxThreshold " + JSON.stringify(maxThreshold));
-            print("myState " + JSON.stringify(myState) + ", myunixdayint " + JSON.stringify(myunixdayint));
+            print("myState " + myState + ", myunixdayint " + myunixdayint);
             
-            // make it more generic
-            if(myState === 0) {
-                Shelly.call("Switch.Set", {"id": switch1, "on": false});
-                Shelly.call("Switch.Set", {"id": switch2, "on": false});
-                Shelly.call("Switch.Set", {"id": switch3, "on": false});
+            value1 = false;
+            if(myState > 0) {
+                value1 = true;
             }
-            if(myState === 1) {
-                Shelly.call("Switch.Set", {"id": switch1, "on": true});
-                Shelly.call("Switch.Set", {"id": switch2, "on": false});
-                Shelly.call("Switch.Set", {"id": switch3, "on": false});
+            value2 = false;
+            if(myState > 1) {
+                value2 = true;
             }
-            if(myState === 2) {
-                Shelly.call("Switch.Set", {"id": switch1, "on": true});
-                Shelly.call("Switch.Set", {"id": switch2, "on": true});
-                Shelly.call("Switch.Set", {"id": switch3, "on": false});
+            value3 = false;
+            if(myState > 2) {
+                value3 = true;
             }
-            if(myState === 3) {
-                Shelly.call("Switch.Set", {"id": switch1, "on": true});
-                Shelly.call("Switch.Set", {"id": switch2, "on": true});
-                Shelly.call("Switch.Set", {"id": switch3, "on": true});
-            }
+            Shelly.call("Switch.Set", {"id": switch1, "on": value1});
+            Shelly.call("Switch.Set", {"id": switch2, "on": value2});
+            Shelly.call("Switch.Set", {"id": switch3, "on": value3});
         },
         null
     );
@@ -94,7 +84,6 @@ function getData() {
             current = powerPerLine + 1234;
             if (error_code !== 0) {
                 print("error" + JSON.stringify(error_code));
-                // Not read response if there is an error, to avoid that the script stops
             }
             else if (res.code === 200) {
                 let st = JSON.parse(res.body);
@@ -107,18 +96,31 @@ function getData() {
     );
 };
 
+function startDatePoll() {
+    // get date is once per day enough
+    unixdayPollTimer = Timer.set(86400 * 1000,
+        true,
+        function () {
+            getDate();
+        },
+        null
+    );
+}
+
 function getDate() {
     Shelly.call("Sys.GetStatus",
         {},
         function(result, err_code, err_message, user_data) {
             if (err_code === 0) {
                 // processing successful result
-                myunixdayint = result.unixtime / 86400 | 0;
+                myunixdayint = Math.floor(result.unixtime / 86400);
             }
         },
         null
     );
 }
 
-
+//ensure the day is read before start
+getDate();
+startDatePoll();
 startMonitor();
