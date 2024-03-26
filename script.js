@@ -21,57 +21,60 @@ function startMonitor() {
     dataPollTimer = Timer.set(10 * 1000,
         true,
         function () {
-            getData();
-            
-            powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
-
-            print("----- LOG -----");
-            print("powerCurrent " + current + ", powerAverage " + powerAverage);
-            
-            // only use every third calls result
-            mycount = mycount + 1;
-            if(mycount < 3) {
-                return;
+            try {
+                getData();
+                
+                powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
+    
+                print("----- LOG -----");
+                print("powerCurrent " + current + ", powerAverage " + powerAverage);
+                
+                // only use every third calls result
+                mycount = mycount + 1;
+                if(mycount < 3) {
+                    return;
+                }
+                mycount = 0;
+                            
+                if(powerAverage > maxThreshold) {
+                    myState = myState - 1;
+                }
+                if(powerAverage < minThreshold) {
+                    myState = myState + 1;
+                }
+                
+                // make sure that only allowed states are used
+                if(myState < 0)
+                    myState = 0;
+                if(myState > 3)
+                    myState = 3;
+                
+                // modulo 3 for day cycling of switches
+                let switch1 = myunixdayint % 3;
+                let switch2 = (myunixdayint + 1) % 3;
+                let switch3 = (myunixdayint + 2) % 3;
+    
+                print("myState " + myState + ", myunixdayint " + myunixdayint);
+                
+                value1 = false;
+                if(myState > 0) {
+                    value1 = true;
+                }
+                value2 = false;
+                if(myState > 1) {
+                    value2 = true;
+                }
+                value3 = false;
+                if(myState > 2) {
+                    value3 = true;
+                }
+                Shelly.call("Switch.Set", {"id": switch1, "on": value1});
+                Shelly.call("Switch.Set", {"id": switch2, "on": value2});
+                Shelly.call("Switch.Set", {"id": switch3, "on": value3});
+            } catch(exception) {
+                print("exception: ", JSON.stringify(exception));
             }
-            mycount = 0;
-                        
-            if(powerAverage > maxThreshold) {
-                myState = myState - 1;
-            }
-            if(powerAverage < minThreshold) {
-                myState = myState + 1;
-            }
-            
-            // make sure that only allowed states are used
-            if(myState < 0)
-                myState = 0;
-            if(myState > 3)
-                myState = 3;
-            
-            // modulo 3 for day cycling of switches
-            let switch1 = myunixdayint % 3;
-            let switch2 = (myunixdayint + 1) % 3;
-            let switch3 = (myunixdayint + 2) % 3;
-
-            print("myState " + myState + ", myunixdayint " + myunixdayint);
-            
-            value1 = false;
-            if(myState > 0) {
-                value1 = true;
-            }
-            value2 = false;
-            if(myState > 1) {
-                value2 = true;
-            }
-            value3 = false;
-            if(myState > 2) {
-                value3 = true;
-            }
-            Shelly.call("Switch.Set", {"id": switch1, "on": value1});
-            Shelly.call("Switch.Set", {"id": switch2, "on": value2});
-            Shelly.call("Switch.Set", {"id": switch3, "on": value3});
-        },
-        null
+        }
     );
 }
 
@@ -80,19 +83,22 @@ function getData() {
             url: 'http://192.168.178.119/cm?cmnd=status%2010'
         },
         function (res, error_code, error_msg, ud) {
-            // if call is not successful, this should prevent the outputs from beeing turned on
-            current = powerPerLine + 1234;
-            if (error_code !== 0) {
-                print("error" + JSON.stringify(error_code));
-            }
-            else if (res.code === 200) {
-                let st = JSON.parse(res.body);
-                if(undefined !== st.StatusSNS.SML.z16_7_0) {
-                    current = st.StatusSNS.SML.z16_7_0;
+            try {
+                // if call is not successful, this should prevent the outputs from beeing turned on
+                current = powerPerLine + 1234;
+                if (error_code !== 0) {
+                    print("error" + JSON.stringify(error_code));
                 }
-            };
-        },
-        null
+                else if (res.code === 200) {
+                    let st = JSON.parse(res.body);
+                    if(undefined !== st.StatusSNS.SML.z16_7_0) {
+                        current = st.StatusSNS.SML.z16_7_0;
+                    }
+                };
+            } catch(exception) {
+                print("exception: ", JSON.stringify(exception));
+            }
+        }
     );
 };
 
@@ -101,9 +107,12 @@ function startDatePoll() {
     unixdayPollTimer = Timer.set(86400 * 1000,
         true,
         function () {
-            getDate();
-        },
-        null
+            try {
+                getDate();
+            } catch(exception) {
+                print("exception: ", JSON.stringify(exception));
+            }
+        }
     );
 }
 
@@ -111,12 +120,15 @@ function getDate() {
     Shelly.call("Sys.GetStatus",
         {},
         function(result, err_code, err_message, user_data) {
-            if (err_code === 0) {
-                // processing successful result
-                myunixdayint = Math.floor(result.unixtime / 86400);
+            try {
+                if (err_code === 0) {
+                    // processing successful result
+                    myunixdayint = Math.floor(result.unixtime / 86400);
+                }
+            } catch(exception) {
+                print("exception: ", JSON.stringify(exception));
             }
-        },
-        null
+        }
     );
 }
 
