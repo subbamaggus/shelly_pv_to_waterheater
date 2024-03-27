@@ -105,7 +105,7 @@ function getData() {
 
 function startDatePoll() {
     // get date is once per day enough
-    unixdayPollTimer = Timer.set(86400 * 1000,
+    unixdayPollTimer = Timer.set(8640 * 1000,
         true,
         function () {
             try {
