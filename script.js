@@ -25,9 +25,7 @@ function startMonitor() {
                 getData();
                 
                 powerAverage = (powerAverage * averageValues + current) / (averageValues + 1);
-    
-                print("----- LOG -----");
-                print("powerCurrent " + current + ", powerAverage " + powerAverage);
+                print("powerAverage " + powerAverage);
                 
                 // only use every third calls result
                 mycount = mycount + 1;
@@ -48,13 +46,13 @@ function startMonitor() {
                     myState = 0;
                 if(myState > 3)
                     myState = 3;
+
+                print("myState " + myState);
                 
                 // modulo 3 for day cycling of switches
                 let switch1 = myunixdayint % 3;
                 let switch2 = (myunixdayint + 1) % 3;
                 let switch3 = (myunixdayint + 2) % 3;
-    
-                print("myState " + myState + ", myunixdayint " + myunixdayint);
                 
                 value1 = false;
                 if(myState > 0) {
@@ -68,6 +66,8 @@ function startMonitor() {
                 if(myState > 2) {
                     value3 = true;
                 }
+                print("value1 " + value1 + ", value2 " + value2 + ", value3 " + value3);
+                
                 Shelly.call("Switch.Set", {"id": switch1, "on": value1});
                 Shelly.call("Switch.Set", {"id": switch2, "on": value2});
                 Shelly.call("Switch.Set", {"id": switch3, "on": value3});
@@ -87,12 +87,13 @@ function getData() {
                 // if call is not successful, this should prevent the outputs from beeing turned on
                 current = powerPerLine + 1234;
                 if (error_code !== 0) {
-                    print("error" + JSON.stringify(error_code));
+                    print("error " + JSON.stringify(error_code));
                 }
                 else if (res.code === 200) {
                     let st = JSON.parse(res.body);
                     if(undefined !== st.StatusSNS.SML.z16_7_0) {
                         current = st.StatusSNS.SML.z16_7_0;
+                        print("current " + current);
                     }
                 };
             } catch(exception) {
@@ -124,6 +125,7 @@ function getDate() {
                 if (err_code === 0) {
                     // processing successful result
                     myunixdayint = Math.floor(result.unixtime / 86400);
+                    print("myunixdayint " + myunixdayint);
                 }
             } catch(exception) {
                 print("exception: ", JSON.stringify(exception));
